@@ -16,10 +16,8 @@ def load_csv_fixed(filepath):
         lines.append(line)
     return pd.read_csv(io.StringIO("\n".join(lines)))
 
-# Load model and data
 model = joblib.load("model.pkl")
 
-# Load dataset again (same preprocessing as training)
 df_2019 = load_csv_fixed("dengue_2019.csv")
 df_2020 = load_csv_fixed("dengue_2020.csv")
 df_2021 = load_csv_fixed("dengue_2021.csv")
@@ -55,12 +53,10 @@ df_model = pd.get_dummies(
 
 X = df_model.drop(["Cases", "High_Risk", "Year"], axis=1)
 
-# SHAP
 explainer = shap.TreeExplainer(model)
 shap_values = explainer.shap_values(X)
 
-# Newer SHAP returns 3D array for tree ensembles: (samples, features, classes)
 if isinstance(shap_values, list):
-    shap.summary_plot(shap_values[1], X)   # older API
+    shap.summary_plot(shap_values[1], X)   
 else:
-    shap.summary_plot(shap_values[:, :, 1], X)  # newer API
+    shap.summary_plot(shap_values[:, :, 1], X)  
